@@ -1,0 +1,314 @@
+{% extends "base.html" %}{% load staticfiles %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/datatables.min.css' %}">
+{% endblock %}
+
+{% block breadcrumb %}
+<button class="btn btn-default" onclick="createForm()">
+  <span class="glyphicon glyphicon-plus"></span> 添 加
+</button>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="col-md-12">
+    <div class="box box-widget">
+      <div class="box-body">
+        <table class="table" id="id_table" style="width:100%">
+          <thead>
+          <tr>
+            <th>Host</th>
+            <th>Username</th>
+            <th>Owner</th>
+            <th>Contact</th>
+            <th>Notes</th>
+            <th>操作</th>
+          </tr>
+          </thead>
+          <tbody>
+          {% for item in lPage %}
+          <tr id="id_tr_{{ item.id }}">
+            <td>{{ item.host }} : {{ item.port }}</td>
+            <td>{{ item.username }}</td>
+            <td>{{ item.owner }}</td>
+            <td>{{ item.contact }}</td>
+            <td>{{ item.notes }}</td>
+            <td>
+              <a href="javascript:void(0);" class="fa fa-user-secret" onclick="decodeTr({{ item.id }})"></a>&nbsp;
+
+              <a href="javascript:void(0);" class="glyphicon glyphicon-edit" onclick="updateTr({{ item.id }})"></a>&nbsp;
+              <a href="javascript:void(0);" class="glyphicon glyphicon-trash" onclick="deleteTr({{ item.id }})"></a>
+            </td>
+          </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modalForm">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="modalForm_title"></h4>
+      </div>
+      <div class="modal-body">
+
+        <div class="tab-content">
+          <div class="tab-pane active">
+            <form class="form-horizontal" id="modalForm_Content" method="post" action="">{% csrf_token %}
+              <input type="text" id="form_id" value="" hidden>
+
+              <div class="form-group">
+                <label class="col-md-2 control-label"> 服务器 </label>
+                <div class="col-md-5">
+                  <input type="text" class="form-control" id="form_host" name="host" required
+                         placeholder="ip or name">
+                  <span class="help-block"></span>
+                </div>
+                <div class="col-md-4">
+                  <input type="text" class="form-control" id="form_port" name="port" value="3306" required
+                         placeholder="port">
+                  <span class="help-block"></span>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="col-md-2 control-label"> 用户名 </label>
+                <div class="col-md-9">
+                  <input type="text" class="form-control" id="form_username" name="username" required
+                         placeholder="username">
+                  <span class="help-block"></span>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="col-md-2 control-label"> 密 码 </label>
+                <div class="col-md-9">
+                  <input type="text" class="form-control" id="form_password" name="password" required
+                         placeholder="password">
+                  <span class="help-block"></span>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="col-md-2 control-label"> 需求方 </label>
+                <div class="col-md-9">
+                  <input type="text" class="form-control" id="form_owner" name="owner" required
+                         placeholder="">
+                  <span class="help-block"></span>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="col-md-2 control-label"> 联系人 </label>
+                <div class="col-md-9">
+                  <input type="text" class="form-control" id="form_contact" name="contact" required
+                         placeholder="">
+                  <span class="help-block"></span>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="col-md-2 control-label"> 备 注</label>
+                <div class="col-md-9">
+                  <textarea class="form-control" id="form_notes" name="notes" placeholder=""></textarea>
+                  <span class="help-block"></span>
+                </div>
+              </div>
+
+              <div class="modal-footer">
+                <button class="btn btn-default pull-left" data-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary" onclick="submit_type=1">SAVE</button>
+                <button type="submit" class="btn btn-default" onclick="submit_type=2">Save and add another</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="id_modal_password">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">查看密码</h4>
+      </div>
+      <div class="modal-body">
+        <p id="id_password"></p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script src="{% static 'js/django.ajax.post.csrf.js' %}"></script>
+<script src="{% static 'js/datatables.min.js' %}"></script>
+<script>
+    $('#page_header').text('密码表');
+    $('#page_header_descript').text('password table');
+
+    // 加载表格
+    var table = $('#id_table').DataTable({
+      "ordering": false,
+      "stateSave": true,
+      "bRetrieve": true,
+      "pagingType": "full",
+      "language": {
+        "paginate": {
+          "first": "首页",
+          "last": "尾页",
+          "next": "下一页",
+          "previous": "上一页"
+        }
+      },
+      "fnInitComplete": function (settings) {
+        // 判断是从新建页跳过来的则跳转到最后一页
+        if ($.cookie('addform') == 1) {
+          this.api().page('last').draw('page');
+          $.cookie('addform', null, {path: '/'});
+        }
+      }
+    })
+
+    // 点击创建时的表单信息
+    function createForm() {
+      $('#modalForm_title').text('添加密码数据');
+      $('#modalForm_Content').trigger("reset");
+
+      $('#modalForm').modal('show');
+    }
+
+    // 点击编辑时的表单信息
+    function updateTr(id) {
+      $('#modalForm_title').text('修改密码数据');
+
+      $.ajax({
+        type: "get",
+        url: "/password/table/change/",
+        data: {id: id},
+        dataType: "json",
+        success: function (data) {
+          if (data.state) {
+            $.each(data.message, function (k, v) {
+              if (k == 'password') {
+                $('#form_' + k).val('');
+                $('#form_' + k).attr('required', false);
+                $('#form_' + k).attr('placeholder','如果无需修改请保持为空');
+              } else {
+                $('#form_' + k).val(v);
+              }
+            });
+          } else {
+            toastr.error(data.message);
+          }
+        },
+        error: function (data) {
+          toastr.error('Error: ajax 请求出错！')
+        }
+      });
+
+      $('#modalForm').modal('show');
+    }
+
+    // 解密密码
+    function decodeTr(id) {
+
+      $.ajax({
+        type: "get",
+        url: "/password/table/decode/",
+        data: {id: id},
+        dataType: "json",
+        success: function (data) {
+          if (data.state) {
+            var html = '主 机：'+data.host+'<br>'+'用 户：'+data.username+'<br>'+'密 码：'+data.message
+
+            $('#id_password').html(html);
+            $('#id_modal_password').modal('show');
+          } else {
+            toastr.error(data.message);
+          }
+        },
+        error: function (data) {
+          toastr.error('Error: ajax 请求出错！')
+        }
+      });
+    }
+
+    // 使用ajax submit提交表单数据
+    $('#modalForm_Content').submit(function (event) {
+      event.preventDefault();
+
+      if (confirm("确认提交这些数据吗？")) {
+        params = $('#modalForm_Content').serializeJson();
+        params.id = $('#form_id').val();
+
+        $.ajax({
+          type: "post",
+          url: "/password/table/change/",
+          data: JSON.stringify(params),
+          dataType: "json",
+          success: function (data) {
+            if (data.state) {
+              if (submit_type == 1) {
+                $('#modalForm').modal('hide');
+
+                location.reload()
+                // window.location = "/password/table/"
+              }
+              if (submit_type == 2) {
+                $('#modalForm_Content').trigger("reset");
+                $('#id_form_project').val(null).trigger('change');
+              }
+
+              toastr.success(data.message);
+            } else {
+              toastr.error(data.message)
+            }
+          },
+          error: function () {
+            toastr.error('Error: ajax 请求出错！')
+          }
+        });
+      }
+    });
+
+    // 删除表格数据
+    function deleteTr(id) {
+      if (confirm("确认删除吗？")) {
+        $.ajax({
+          type: 'post',
+          url: '/password/table/delete/',
+          data: {id: id},
+          dataType: "json",
+          success: function (data) {
+            if (data.state) {
+              table.row($('#id_tr_' + id)).remove().draw(false);
+
+              toastr.success(data.message);
+            } else {
+              toastr.error(data.message)
+            }
+          },
+          error: function () {
+            toastr.error('Error: ajax 请求出错！')
+          }
+        });
+      }
+    }
+</script>
+{% endblock %}
