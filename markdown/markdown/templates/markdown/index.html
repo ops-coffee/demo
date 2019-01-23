@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block css %}
+<link rel="stylesheet" href="/static/plugins/editor.md/css/editormd.min.css">
+{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="col-md-12">
+    <div id="editormd">
+      <textarea># 站点介绍
+- site：**运维咖啡吧**
+- url：[https://ops-coffee.cn](https://ops-coffee.cn)
+- slogen: **追求技术的道路上，我从不曾停下脚步**
+
+# 代码示例
+```python
+def hello():
+	print('欢迎关注微信公众号【运维咖啡吧】')
+```
+
+# 图片示例
+![扫码关注查看更多原创文章](/static/img/qrcode.jpg)</textarea>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script src="/static/plugins/editor.md/js/editormd.min.js"></script>
+<script>
+    $('#page_header').text('Markdown');
+    $('#page_header_descript').text('markdown edit');
+
+    $(function () {
+      var testEditor = editormd("editormd", {
+        width: "100%",
+        height: 720,
+        syncScrolling: "single",
+        path: "/static/plugins/editor.md/lib/",
+
+        imageUpload: true,
+        imageFormats: ["jpg", "jpeg", "gif", "png", "bmp"],
+        imageUploadURL: "{% url 'api-upload-url' %}"
+      });
+    });
+
+</script>
+{% endblock %}

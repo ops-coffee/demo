@@ -3,7 +3,7 @@
 此项目为密码管理表的Demo，依赖环境
 
 - python 3.6
-- django 2.0
+- django 2.1
 - adminlte 2.4
 
 # 部署方法
