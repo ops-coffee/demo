@@ -21,6 +21,8 @@ from markdown.views import upload
 urlpatterns = [
     path('', TemplateView.as_view(template_name='markdown/index.html'),
          name='index-url'),
+    path('preview/', TemplateView.as_view(template_name='markdown/preview.html'),
+         name='preview-url'),
 
     path('api/upload/', upload, name='api-upload-url'),
 ]
