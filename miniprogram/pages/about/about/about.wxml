@@ -1,0 +1,16 @@
+<view class="cu-custom" style="height:{{CustomBar}}px;">
+  <view class="cu-bar fixed bg-gradual-green" style="height:{{CustomBar}}px;padding-top:{{StatusBar}}px;">
+    <navigator class='action' open-type="navigateBack" delta="1" hover-class="none">
+      <text class='icon-people'></text> 关于
+    </navigator>
+  </view>
+</view>
+
+<view class='margin-xl bg-white padding-xl radius shadow-lg'>
+  <view class='text-center margin-bottom text-lg  text-grey'>关于运维咖啡吧</view>
+  <view class='text-content'>
+    <view class='margin-top-sm'>该项目是【运维咖啡吧】公众号的小程序版本，基于ColorUI组件库开发，实验性项目。</view>
+    <view class='margin-top-sm'>本意是希望借助小程序优化公众号无法分类检索等问题，但发现小程序无法直接跳转到公众号内容详情页，达不到优化的效果(⊙﹏⊙)</view>
+    <image src="/images/weixin.jpg" mode="widthFix" class="response"></image>
+  </view>
+</view>

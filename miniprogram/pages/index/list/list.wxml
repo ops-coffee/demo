@@ -1,0 +1,17 @@
+<image src="/images/indexBg.png" mode="widthFix" class="response"></image>
+
+<view class="cu-card article">
+  <view bindtap="toChild" data-blog="{{item}}" class="cu-item shadow" wx:for="{{Blogs}}" wx:key>
+    <view class="title">{{item.title}}</view>
+    <view class="content">
+      <image src="{{item.image}}" mode="aspectFill"></image>
+      <view class="desc">
+        <view class="text-content"> {{item.description}}</view>
+        <view class="flex justify-between">
+          <text class="text-xs text-gray">原创：37丫37</text>
+          <view class="bg-right cu-tag bg-green light sm round">{{item.tag}}</view>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

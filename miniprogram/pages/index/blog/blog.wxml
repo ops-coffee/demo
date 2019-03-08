@@ -1,0 +1,43 @@
+<view class="cu-custom" style="height:{{CustomBar}}px;">
+  <view class="cu-bar fixed bg-gradual-blue" style="height:{{CustomBar}}px;padding-top:{{StatusBar}}px;">
+    <navigator class='action' open-type="navigateBack" delta="1" hover-class="none">
+      <text class='icon-back'></text> 返回
+    </navigator>
+    <view class='action'>
+
+    </view>
+  </view>
+</view>
+
+
+<view class='flex-sub'>
+  <view class='bg-white solids-bottom text-xl  text-center padding'>
+    <text class='text-black text-bold'>{{blog.title}}</text>
+  </view>
+</view>
+<view class='bg-white'>
+  <view class='padding-xs flex align-center'>
+    <view class='padding basis-xs'>标题：</view>
+    <view class='padding basis-xl'>{{blog.title}}</view>
+  </view>
+  <view class='padding-xs flex align-center'>
+    <view class='padding basis-xs'>描述：</view>
+    <view class='padding basis-xl'>{{blog.description}}</view>
+  </view>
+  <view class='padding-xs flex align-center'>
+    <view class='padding basis-xs'>作者：</view>
+    <view class='padding basis-xl'>37丫37</view>
+  </view>
+  <view class='padding-xs flex'>
+    <view class='padding basis-xs'>分类：</view>
+    <view class='padding basis-xl'>{{blog.tag}}</view>
+  </view>
+  <view class='padding-xs flex'>
+    <view class='padding basis-xs'>详情：</view>
+    <view class='padding basis-xl'>
+      <text class='icon-safe'>点击下方查看按钮</text>
+    </view>
+  </view>
+</view>
+
+<official-account></official-account>
