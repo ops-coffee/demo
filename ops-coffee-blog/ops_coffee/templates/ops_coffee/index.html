@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+
+{% block css%}
+<link href="/static/css/jsoneditor.min.css" rel="stylesheet" type="text/css">
+{% endblock %}
+
+{% block content %}
+<form class="form-horizontal" id="create_form" method="post" action="">{% csrf_token %}
+  <div class="form-group">
+    <div class="col-sm-12" id="jsoneditor" style="height:620px"></div>
+  </div>
+  <div class="form-group">
+    <div class="col-sm-6">
+      <input class="btn btn-success btn-block" type="button" onclick="save()" value="保存文件"/><br/>
+    </div>
+    <div class="col-sm-6">
+      <input class="btn btn-warning btn-block" type="button" onclick="push()" value="发布主页"/><br/>
+    </div>
+  </div>
+</form>
+
+<div style="display:none">
+  <div id="main-hidden" style="display:none;">
+    <h3 class="list list-top">DevOps系列</h3>
+    <ul id="DevOps"></ul>
+    <h3 class="list">Elastic系列</h3>
+    <ul id="ELK"></ul>
+    <h3 class="list">Python系列</h3>
+    <ul id="Python"></ul>
+    <h3 class="list">Django系列</h3>
+    <ul id="Django"></ul>
+    <h3 class="list">LDAP系列</h3>
+    <ul id="OpenLDAP"></ul>
+    <h3 class="list">小程序</h3>
+    <ul id="小程序"></ul>
+    <h3 class="list">这是生活</h3>
+    <ul id="这是生活"></ul>
+  </div>
+
+  <textarea id="html-code"></textarea>
+</div>
+{% endblock %}
+
+{% block js %}
+<script src="/static/js/jsoneditor.min.js"></script>
+<script src="/static/js/django.ajax.post.csrf.js"></script>
+<script>
+  // create the editor
+  var container = document.getElementById("jsoneditor");
+  var editor = new JSONEditor(container, {
+    mode: 'code'
+  });
+
+  // set json
+  editor.set({{ data|safe }});
+
+  // save json
+  function save() {
+    var json = editor.get();
+
+    $.ajax({
+      type: 'post',
+      url: '/index/save/',
+      data: JSON.stringify({'content': json}),
+      dataType: "json",
+      success: function (data) {
+        toastr.success("更新成功 ^_^");
+      },
+      error: function () {
+        toastr.error('Error: ajax 请求出错！')
+      }
+    })
+  }
+
+  // push json
+  function push() {
+    json = editor.get();
+
+    var blogs = json.data;
+    $.each(blogs, function (infoIndex, info) {
+      _li =
+        '<li><a href="' + info["url"] + '" target="_blank" rel="noreferrer">' + info["title"] + '</a></li>\n';
+      $("#" + info["tag"]).append(_li);
+    });
+
+    html = $("#main-hidden").html()
+
+    $.ajax({
+      type: 'post',
+      url: '/index/push/',
+      data: JSON.stringify({'html': html}),
+      dataType: "json",
+      success: function (data) {
+        if (data.state) {
+          toastr.success(data.message);
+        } else {
+          toastr.error(data.message);
+        }
+      },
+      error: function () {
+        toastr.error('Error: ajax 请求出错！')
+      }
+    })
+  }
+
+</script>
+{% endblock %}

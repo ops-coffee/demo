@@ -1,0 +1,241 @@
+{% extends "base.html" %}
+
+{% block css %}
+<link rel="stylesheet" href="/static/css/datatables.min.css">
+{% endblock %}
+
+
+{% block content %}
+<form class="form-horizontal">
+  <div class="form-group">
+    <div class="col-sm-6">
+      <input class="btn btn-success btn-block" type="button" onclick="createForm()" value="新建文章"/>
+    </div>
+    <div class="col-sm-6">
+      <input class="btn btn-warning btn-block" type="button" onclick="push()" value="全量发布"/>
+    </div>
+  </div>
+</form>
+
+
+<div class="row">
+  <div class="col-sm-12">
+    <div class="box box-widget">
+      <div class="box-body">
+        <table class="table" id="id_table" style="width:100%">
+          <thead>
+          <tr>
+            <th>path</th>
+            <th>name</th>
+            <th>title</th>
+            <th>tools</th>
+          </tr>
+          </thead>
+          <tbody>
+          {% for item in lPage %}
+          <tr id="id_tr_{{ item.id }}">
+            <td>{{ item.path }}</td>
+            <td>{{ item.name }}</td>
+            <td>{{ item.title }}</td>
+            <td>
+              <a href="javascript:void(0);" class="glyphicon glyphicon-edit" onclick="updateTr({{ item.id }})"></a>&nbsp;
+              <a href="javascript:void(0);" class="glyphicon glyphicon-trash" onclick="deleteTr({{ item.id }})"></a>
+            </td>
+          </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modalForm">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="modalForm_title"></h4>
+      </div>
+      <div class="modal-body">
+
+        <div class="tab-content">
+          <div class="tab-pane active">
+            <form class="form-horizontal" id="modalForm_Content" method="post" action="">{% csrf_token %}
+              <input type="text" id="form_id" value="" hidden>
+
+              <div class="form-group">
+                <label class="col-md-2 control-label"> URL </label>
+                <div class="col-md-3">
+                  <input type="text" class="form-control" id="form_path" name="path" required
+                         placeholder="url前缀路径">
+                  <span class="help-block"></span>
+                </div>
+                <div class="col-md-6">
+                  <input type="text" class="form-control" id="form_name" name="name" required
+                         placeholder="url blog名称">
+                  <span class="help-block"></span>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="col-md-2 control-label"> 标题 </label>
+                <div class="col-md-9">
+                  <input type="text" class="form-control" id="form_title" name="title" required
+                         placeholder="blog title">
+                  <span class="help-block"></span>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="col-md-2 control-label"> 内 容</label>
+                <div class="col-md-9">
+                  <textarea class="form-control" id="form_content" name="content" rows="24"></textarea>
+                  <span class="help-block"></span>
+                </div>
+              </div>
+
+              <div class="modal-footer">
+                <button class="btn btn-default pull-left" data-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary" onclick="submit_type=1">SAVE</button>
+                <button type="submit" class="btn btn-default" onclick="submit_type=2">Save and add another</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script src="/static/js/django.ajax.post.csrf.js"></script>
+<script src="/static/js/datatables.min.js"></script>
+<script>
+    // 加载表格
+    var table = $('#id_table').DataTable({
+      "ordering": false,
+      "stateSave": true,
+      "bRetrieve": true,
+    })
+
+    // 点击创建时的表单信息
+    function createForm() {
+      $('#modalForm_title').text('添加Blog');
+      $('#modalForm_Content').trigger("reset");
+
+      $('#modalForm').modal('show');
+    }
+
+    // 点击编辑时的表单信息
+    function updateTr(id) {
+      $('#modalForm_title').text('修改Blog');
+
+      $.ajax({
+        type: "get",
+        url: "/blog/change/",
+        data: {id: id},
+        dataType: "json",
+        success: function (data) {
+          if (data.state) {
+            $.each(data.message, function (k, v) {
+              $('#form_' + k).val(v);
+            });
+          } else {
+            toastr.error(data.message);
+          }
+        },
+        error: function (data) {
+          toastr.error('Error: ajax 请求出错！')
+        }
+      });
+
+      $('#modalForm').modal('show');
+    }
+
+    // 使用ajax submit提交表单数据
+    $('#modalForm_Content').submit(function (event) {
+      event.preventDefault();
+
+      if (confirm("确认提交这些数据吗？")) {
+        params = $('#modalForm_Content').serializeJson();
+        params.id = $('#form_id').val();
+
+        $.ajax({
+          type: "post",
+          url: "/blog/change/",
+          data: JSON.stringify(params),
+          dataType: "json",
+          success: function (data) {
+            if (data.state) {
+              if (submit_type == 1) {
+                $('#modalForm').modal('hide');
+
+                location.reload()
+              }
+              if (submit_type == 2) {
+                $('#modalForm_Content').trigger("reset");
+                $('#id_form_project').val(null).trigger('change');
+              }
+
+              toastr.success(data.message);
+            } else {
+              toastr.error(data.message)
+            }
+          },
+          error: function () {
+            toastr.error('Error: ajax 请求出错！')
+          }
+        });
+      }
+    });
+
+    // 删除表格数据
+    function deleteTr(id) {
+      if (confirm("确认删除吗？")) {
+        $.ajax({
+          type: 'post',
+          url: '/blog/delete/',
+          data: {id: id},
+          dataType: "json",
+          success: function (data) {
+            if (data.state) {
+              table.row($('#id_tr_' + id)).remove().draw(false);
+
+              toastr.success(data.message);
+            } else {
+              toastr.error(data.message)
+            }
+          },
+          error: function () {
+            toastr.error('Error: ajax 请求出错！')
+          }
+        });
+      }
+    }
+
+  // 生成全部文章
+  function push() {
+    $.ajax({
+      type: 'post',
+      url: '/blog/render/',
+      dataType: "json",
+      success: function (data) {
+        if (data.state) {
+          d = data.message;
+          toastr.success("共有"+d.total+"篇文章需要生成，成功生成"+d.success+"篇，"+d.git);
+        } else {
+          toastr.error(data.message)
+        }
+      },
+      error: function () {
+        toastr.error('Error: ajax 请求出错！')
+      }
+    })
+  }
+
+</script>
+{% endblock %}
