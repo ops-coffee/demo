@@ -25,3 +25,7 @@ python manage.py runserver 0.0.0.0:80
 4. 浏览器访问
 
 ![欢迎关注微信公众号【运维咖啡吧】](/images/qrcode.jpg)
+
+5. 对应文章
+
+配合对应文章看源码更有效，文章地址：[直达链接，点我查看](https://mp.weixin.qq.com/s/L6Jud6gp5c9bbaUljUkNFA)
