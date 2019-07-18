@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+        <meta http-equiv="Cache-Control" content="no-transform" />
+        <meta http-equiv="Cache-Control" content="no-siteapp" />
+        <meta name="applicable-device" content="pc,mobile">
+        <meta name="keywords" content="运维,开发,运维开发,运维咖啡吧" />
+        <meta name="description" content="追求技术的道路上，我从不曾停下脚步" />
+        <title>运维咖啡吧 | ops-coffee.cn</title>
+        <!-- 加载bootstrap -->
+        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+        <!-- 加载bootstrap-dualllistbox -->
+        <link rel="stylesheet" href="static/bootstrap-duallistbox.css">
+        <script src="static/jquery.bootstrap-duallistbox.js"></script>
+    </head>
+    
+    <body>
+        <div class="container">
+            <div class="col-md-12">
+                <h1 style="text-align:center">Bootstrap Dual Listbox Live Demo</h1>
+                <h6 style="text-align:center"><a href="https://ops-coffee.cn">@ops-coffee.cn</a></h6>
+
+                <hr />
+
+                <form class="form-horizontal" id="duallistbox">
+                    <div class="form-group">
+                        <select class="form-control" multiple="multiple" name="groups" size="10">
+                            <option value="1">OPS-COFFEE-A</option>
+                            <option selected value="2">OPS-COFFEE-B</option>
+                            <option value="3">OPS-COFFEE-C</option>
+                            <option value="4">OPS-COFFEE-D</option>
+                            <option selected value="5">OPS-COFFEE-E</option>
+                            <option value="6">OPS-COFFEE-F</option>
+                            <option value="7">OPS-COFFEE-G</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <button id="get" type="button" class="btn btn-block btn-default">get val</button>
+                        <button id="add" type="button" class="btn btn-block btn-default">add new</button>
+                        <button id="refresh" type="button" class="btn btn-block btn-default">refresh</button>
+                        <button id="destroy" type="button" class="btn btn-block btn-default">destroy</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <script>
+            // 加载duallistbox插件
+            var selectorx = $('select[name="groups"]').bootstrapDualListbox({
+                nonSelectedListLabel: '未选择的组',
+                selectedListLabel: '已选择的组',
+
+                filterTextClear: '展示所有',
+                filterPlaceHolder: '过滤搜索',
+
+                moveSelectedLabel: "添加",
+                moveAllLabel: '添加所有',
+                removeSelectedLabel: "移除",
+                removeAllLabel: '移除所有',
+                //infoText: false,
+                infoText: '共{0}个组',
+                infoTextFiltered: '搜索到{0}个组 ,共{1}个组',
+                infoTextEmpty: '要搜索的组不存在',
+
+                preserveSelectionOnMove: 'moved',
+                moveOnSelect: false,
+                showFilterInputs: true,
+
+                filterOnValues: true,
+                selectorMinimalHeight: 3,
+                helperSelectNamePostfix: '_selected',
+            });
+
+            // 获取选中的值
+            $('#get').click(function() {
+                console.log(selectorx.bootstrapDualListbox('getContainer'))
+                alert(selectorx.val());
+                //alert($('[name="groups"]').val());
+            })
+
+            // 动态添加值
+            $('#add').click(function() {
+                selectorx.append('<option value="9" selected>ops-coffee.cn</option>');
+                selectorx.bootstrapDualListbox('refresh');
+            })
+
+            // 刷新至初始状态
+            $('#refresh').click(function() {
+                $('#duallistbox').trigger('reset');
+                selectorx.bootstrapDualListbox('refresh');
+            })
+
+            // 销毁duallistbox插件
+            $('#destroy').click(function() {
+                selectorx.bootstrapDualListbox('destroy')
+            })
+        </script>
+    </body>
+
+</html>
