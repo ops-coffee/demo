@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+        <meta http-equiv="Cache-Control" content="no-transform" />
+        <meta http-equiv="Cache-Control" content="no-siteapp" />
+        <meta name="applicable-device" content="pc,mobile">
+        <meta name="keywords" content="运维,运维博客,运维开发,ops,sre,linux,devops,python,django,nginx" />
+        <meta name="description" content="追求技术的道路上，我从不曾停下脚步" />
+        <title>运维咖啡吧 | ops-coffee.cn</title>
+		
+        <!-- 为了页面好看，这里添加了bootstrap的css -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+        
+		<!-- 加载 Jquery -->
+        <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+        
+		<!-- 加载 Select2 -->
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.8/css/select2.min.css" rel="stylesheet" />
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.8/js/select2.min.js"></script>
+    </head>
+    
+    <body>
+        <div class="container">
+            <div class="col-md-12">
+                 <h1 style="text-align:center">Select2 Live Demo</h1>
+
+                 <h6 style="text-align:center"><a href="https://ops-coffee.cn">@ops-coffee.cn</a>  
+                    <a href="https://ops-coffee.cn/s/3Or2JK7_Wy9B0WqdUYDroA">点我查看对应使用文档</a></h6>
+
+                <hr />
+                <div class="form-group">
+                    <label class="control-label">Demo1 - 单选Demo：</label>
+                    <select class="form-control" id="id_select2_demo1">
+                        <option value="">-----单选-----</option>
+						<optgroup label="Group-A">
+                        <option value="1">OPS-COFFEE-A</option>
+                        <option value="2">OPS-COFFEE-B</option>
+						</optgroup>
+						<optgroup label="Group-B">
+                        <option value="3">OPS-COFFEE-C</option>
+                        <option value="4">OPS-COFFEE-D</option>
+						</optgroup>
+						<optgroup label="Group-C">
+                        <option value="5">OPS-COFFEE-E</option>
+                        <option value="6">OPS-COFFEE-F</option>
+						</optgroup>
+                        <option value="7">OPS-COFFEE-G</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="control-label">Demo2 - 从本地加载数据：</label>
+                    <select class="form-control" id="id_select2_demo2"></select>
+                </div>
+                <div class="form-group">
+                    <label class="control-label">Demo3 - 从后端加载数据：</label>
+                    <select class="form-control" id="id_select2_demo3"></select>
+                </div>
+                <div class="form-group">
+                    <label class="control-label">Demo4 - 多选Demo：</label>
+                    <select class="form-control" id="id_select2_demo4" multiple="multiple">
+                        <option value="1">OPS-COFFEE-A</option>
+                        <option value="2">OPS-COFFEE-B</option>
+                        <option value="3">OPS-COFFEE-C</option>
+                        <option value="4">OPS-COFFEE-D</option>
+                        <option value="5">OPS-COFFEE-E</option>
+                        <option value="6">OPS-COFFEE-F</option>
+                        <option value="7">OPS-COFFEE-G</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <button class="btn btn-default btn-block" id="add">Add : 会给Demo1添加一个新的option并打开demo1</button>
+                    <button class="btn btn-primary btn-block" id="get">Get : 会获取Demo1的value和text并alert显示</button>
+                    <button class="btn btn-success btn-block" id="init">Init : 会给Demo1和Demo4动态的添加选中的option</button>
+                    <button class="btn btn-warning btn-block" id="clear">Clear : 会清掉Demo1和Demo4选中的option</button>
+                    <button class="btn btn-default btn-block" id="disabled">Disabled : 会Disabled掉Demo1和Demo4</button>
+                    <button class="btn btn-danger btn-block" id="destroy">销毁 : 会销毁掉Demo1和Demo4的select2样式，恢复默认样式</button>
+                </div>
+            </div>
+        </div>
+        <script>
+            // select2单选
+            var selectorx = $('#id_select2_demo1').select2({
+                placeholder: '请选择'
+            });
+
+            // select2单选从本地加载数据
+            var sdata = [{
+                    id: 1,
+                    text: 'OPS-COFFEE-1'
+                },
+                {
+                    id: 2,
+                    text: 'OPS-COFFEE-2'
+                },
+                {
+                    id: 3,
+                    text: 'OPS-COFFEE-3'
+                }
+            ]
+
+            $('#id_select2_demo2').select2({
+                data: sdata,
+                minimumResultsForSearch: -1
+            });
+
+            // select2单选ajax异步加载数据
+            $('#id_select2_demo3').select2({
+                placeholder: '-----单选-----',
+                ajax: {
+                    url: "sdata.json",
+                    dataType: 'json',
+                    delay: 250,
+                    data: function(params) {
+                        return {
+                            search: params.term,
+                            site: "https://ops-coffee.cn"
+                        };
+                    },
+                    processResults: function(data) {
+                        return {
+                            results: data.message
+                        };
+                    },
+                    cache: true
+                },
+                minimumInputLength: 2
+            });
+
+            // select2多选
+            var selectory = $('#id_select2_demo4').select2({
+                placeholder: '请选择，最多选择三个',
+                allowClear: true,
+                maximumSelectionLength: 3,
+            });
+
+            // 动态添加值
+            $('#add').click(function() {
+                var _html = '<option value="9" selected>我是新加的：ops-coffee.cn</option>';
+                $('#id_select2_demo1').append(_html).trigger('change.select2');
+                $('#id_select2_demo1').select2("open");
+            })
+
+            // 获取选中的值
+            $('#get').click(function() {
+                alert('value: ' + $('#id_select2_demo1').select2('val') + ' text: ' +
+                    $("#id_select2_demo1").select2("data")[0].text);
+            })
+
+            // 动态选中，初始化
+            $('#init').click(function() {
+                $("#id_select2_demo1").val(2).trigger("change");
+                $("#id_select2_demo4").val([2, 3, 5]).trigger("change");
+            })
+
+            // 清空已选择的option
+            $('#clear').click(function() {
+                $("#id_select2_demo1").val(null).trigger('change');
+                $("#id_select2_demo4").val(null).trigger('change');
+            })
+
+            // 禁用select2
+            $('#disabled').click(function() {
+                $("#id_select2_demo1").prop('disabled', true);;
+                $("#id_select2_demo4").prop('disabled', true);;
+            })
+
+            // 销毁duallistbox插件
+            $('#destroy').click(function() {
+                $('#id_select2_demo1').select2("destroy");
+                $('#id_select2_demo4').select2("destroy");
+            })
+        </script>
+    </body>
+
+</html>
