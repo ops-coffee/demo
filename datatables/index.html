@@ -9,6 +9,7 @@
         <meta name="applicable-device" content="pc,mobile">
         <meta name="keywords" content="运维,运维博客,运维开发,ops,sre,linux,devops,python,django,nginx" />
         <meta name="description" content="追求技术的道路上，我从不曾停下脚步" />
+        <link rel="icon" href="https://blz.nosdn.127.net/sre/posts/images/favicon.ico" />
         <title>运维咖啡吧 | ops-coffee.cn</title>
 		
         <!-- 为了页面好看，这里添加了bootstrap的css -->
@@ -20,6 +21,10 @@
 		<!-- 加载 Datatables -->
         <link href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css" rel="stylesheet" />
         <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+
+        <style type="text/css">
+          .toolbar {float:left}
+        </style>
 		
 		<!-- Global site tag (gtag.js) - Google Analytics -->
 		<script async src="https://www.googletagmanager.com/gtag/js?id=UA-145149798-1"></script>
@@ -521,62 +526,121 @@
                         </tr>
                     </tfoot>
                 </table>
+
+                <button class="btn btn-block" onclick=page(2)>跳转到第三页</button>
+                <button class="btn btn-block" onclick=page('last')>跳转到最后一页</button>
+
+                <hr />
+                <hr />
+
+                <table id="myTable-x" class="display" style="width:100%"></table>
+                <button class="btn btn-block" onclick=search('https://ops-coffee.cn')>搜索Site列包含"https://ops-coffee.cn"的数据</button>
+                <button class="btn btn-block" onclick=search('')>重新reload显示全部数据</button>
 			</div>
         </div>
         <script>
-            // datatables
-            $(document).ready(function() {
-                $('#myTable').DataTable({
-                    "paging": true,
-                    "ordering": true,
-                    "info": true,
-                    "searching": true,
-                    "pagingType": "simple_numbers",
-                    "order": [
-                        [3, "desc"],
-                        [0, "desc"]
-                    ],
-                    // "stateSave": true,
-                    "language": {
-                        "decimal": "",
-                        "emptyTable": "表中数据为空",
-                        "info": "显示第 _START_ 至 _END_ 项结果，共 _TOTAL_ 项",
-                        "infoEmpty": "显示第 0 至 0 项结果，共 0 项",
-                        "infoFiltered": "(由 _MAX_ 项结果过滤)",
-                        "InfoPostFix": "",
-                        "thousands": ",",
-                        "lengthMenu": "显示 _MENU_ 项结果",
-                        "loadingRecords": "载入中...",
-                        "processing": "处理中...",
-                        "search": "搜索:",
-                        "zeroRecords": "没有匹配结果",
-                        "Paginate": {
-                            "sFirst": "首页",
-                            "sPrevious": "上一页",
-                            "sNext": "下一页",
-                            "sLast": "尾页"
-                        },
-                        "Aria": {
-                            "sSortAscending": ": 以升序排列此列",
-                            "sSortDescending": ": 以降序排列此列"
+            var table = $('#myTable').DataTable({
+                "paging": true,
+                "ordering": true,
+                "info": true,
+                "searching": true,
+                "pagingType": "simple_numbers",
+                "order": [
+                    [3, "desc"],
+                    [0, "desc"]
+                ],
+                // "stateSave": true,
+                "language": {
+                    "decimal": "",
+                    "emptyTable": "表中数据为空",
+                    "info": "显示第 _START_ 至 _END_ 项结果，共 _TOTAL_ 项",
+                    "infoEmpty": "显示第 0 至 0 项结果，共 0 项",
+                    "infoFiltered": "(由 _MAX_ 项结果过滤)",
+                    "InfoPostFix": "",
+                    "thousands": ",",
+                    "lengthMenu": "显示 _MENU_ 项结果",
+                    "loadingRecords": "载入中...",
+                    "processing": "处理中...",
+                    "search": "搜索:",
+                    "zeroRecords": "没有匹配结果",
+                    "Paginate": {
+                        "sFirst": "首页",
+                        "sPrevious": "上一页",
+                        "sNext": "下一页",
+                        "sLast": "尾页"
+                    },
+                    "Aria": {
+                        "sSortAscending": ": 以升序排列此列",
+                        "sSortDescending": ": 以降序排列此列"
+                    }
+                },
+                // "columnDefs": [
+                //     {
+                //         "targets": [ 2 ],
+                //         "visible": false,
+                //         "searchable": false
+                //     },
+                //     {
+                //         "targets": [ 3 ],
+                //         "visible": false,
+                //     }
+                // ],
+
+                "scrollX": "false",
+                "scrollY": "200px",
+                "scrollCollapse": true,
+            });
+
+            function page(num) {
+                table.page(num).draw(false)
+            }
+
+            var tablx = $('#myTable-x').dataTable({
+                "dom": '<"#add-btn.toolbar">frtip',
+
+                "pageLength": 5,
+                "lengthMenu": [5, 10, 20, 50, 100],
+
+                "ajax": 'sdata.json',
+
+                // "serverSide": true,
+                // "processing": true,
+
+                // "ajax": {
+                //     "url": "server.data.json",
+                //     "data": function (d) {
+                //         d.type = 'ops-coffee';
+                //     }
+                // },
+
+                "columns": [
+                    {"data": "id", "title":"Id"},
+                    {
+                        "data": "site", 
+                        "title":"Site",
+                        "render": function (data, type, row) {
+                          return '<a href='+data+' target="_blank">'+data+'</a>'
                         }
                     },
-                    // "columnDefs": [
-                    //     {
-                    //         "targets": [ 2 ],
-                    //         "visible": false,
-                    //         "searchable": false
-                    //     },
-                    //     {
-                    //         "targets": [ 3 ],
-                    //         "visible": false,
-                    //     }
-                    // ],
-                    "scrollX": "false",
-                    "scrollY": "200px",
-                    "scrollCollapse": true,
-                });
+                    {"data": "date", "title":"Date"},
+                    {
+                      "data": "id",
+                      "title": "操作",
+                      "render": function (data, type, row) {
+                        return '<a href="#update/'+row.id+'/" class="btn btn-warning btn-sm">编辑</a> ' +
+                               '<a href="#delete/'+row.id+'/" class="btn btn-danger btn-sm">删除</a>'
+                      }
+                    }
+                ]
             });
+
+            $("#add-btn.toolbar").html(
+              '<button href="#add" class="btn btn-success btn-sm"> + 添加</button>'
+            );
+
+            function search(v) {
+                tablx.api().column(1).search(v).draw()
+            };
         </script>
     </body>
 
