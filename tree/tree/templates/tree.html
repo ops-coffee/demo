@@ -1,0 +1,182 @@
+{% extends "base.html" %}{% load staticfiles %}
+
+{% block css %}
+<link href="{% static 'css/zTreeStyle/zTreeStyle.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block breadcrumb %}
+<button class="btn btn-default" onclick="createForm()">
+  <span class="glyphicon glyphicon-plus"></span> 添 加
+</button>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="col-md-12">
+    <div class="box box-widget">
+      <div class="box-body">
+        <ul id="treeDemo" class="ztree"></ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal fade" id="modalForm">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="modalForm_title"></h4>
+      </div>
+      <div class="modal-body">
+
+        <div class="tab-content">
+          <div class="tab-pane active">
+            <form class="form-horizontal" id="modalForm_Content" method="post" action="">{% csrf_token %}
+              <input type="text" id="form_id" value="" hidden>
+
+              <div class="form-group">
+                <label class="col-md-2 control-label"> 名称 </label>
+                <div class="col-md-9">
+                  <input type="text" class="form-control" id="form_name" name="name" required
+                         placeholder="">
+                  <span class="help-block"></span>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="col-md-2 control-label"> 父节点 </label>
+                <div class="col-md-9">
+                  <select class="form-control" id="citySel" name="parent" onclick="showTree();"></select>
+
+                  <div id="menuContent" class="menuContent" style="display:none;">
+                    <ul id="treeDemo2" class="ztree" style="margin-top:0;"></ul>
+                  </div>
+
+                  <span class="help-block"></span>
+                </div>
+              </div>
+
+
+              <div class="modal-footer">
+                <button class="btn btn-default pull-left" data-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary" onclick="submit_type=1">SAVE</button>
+                <button type="submit" class="btn btn-default" onclick="submit_type=2">Save and add another</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block js %}
+<script src="{% static 'js/jquery.ztree.all.min.js' %}"></script>
+<script src="{% static 'js/django.ajax.post.csrf.js' %}"></script>
+<script>
+    $('#page_header').text('组织架构树');
+    $('#page_header_descript').text('Department tree');
+
+    // 页面加载时生成树
+    var setting = {
+      data: {
+        simpleData: {
+          enable: true
+        }
+      }
+    };
+
+    $.fn.zTree.init($("#treeDemo"), setting, {{ data|safe }});
+
+    // 点击创建时的表单信息
+    function createForm() {
+      $('#modalForm_title').text('添加数据');
+      $('#modalForm_Content').trigger("reset");
+
+      var setting2 = {
+        view: {
+          selectedMulti: false
+        },
+        data: {
+          simpleData: {
+            enable: true
+          }
+        },
+        callback: {
+          onClick: onClick
+        }
+      };
+
+      $.fn.zTree.init($("#treeDemo2"), setting2, {{ data|safe }});
+
+      $('#modalForm').modal('show');
+    }
+
+    function onClick(e, treeId, treeNode) {
+			var zTree = $.fn.zTree.getZTreeObj("treeDemo2");
+			nodes = zTree.getSelectedNodes();
+
+			$("#citySel").html(
+			  "<option value='"+nodes[0].id+"'>"+nodes[0].name+"</option>"
+			);
+
+			hideTree();
+		}
+
+		function showTree() {
+			$("#menuContent").slideDown("fast");
+
+			$("body").bind("mousedown", onBodyDown);
+		}
+
+		function hideTree() {
+			$("#menuContent").fadeOut("fast");
+			$("body").unbind("mousedown", onBodyDown);
+		}
+
+		function onBodyDown(event) {
+			if (!(event.target.id == "citySel" || event.target.id == "menuContent" || $(event.target).parents("#menuContent").length>0)) {
+				hideTree();
+			}
+		}
+
+    // 添加 - Ajax提交
+    $('#modalForm_Content').submit(function (event) {
+      event.preventDefault();
+
+      if (confirm("确认提交这些数据吗？")) {
+        params = $('#modalForm_Content').serializeJson();
+
+        $.ajax({
+          type: "post",
+          url: "/create/",
+          data: JSON.stringify(params),
+          dataType: "json",
+          success: function (data) {
+            if (data.state) {
+              if (submit_type == 1) {
+                window.location = "/"
+              }
+              if (submit_type == 2) {
+                $('#modalForm_Content').trigger("reset");
+              }
+
+              toastr.success(data.message);
+            } else {
+              toastr.error(data.message)
+            }
+          },
+          error: function () {
+            toastr.error('Error: ajax 请求出错！')
+          }
+        });
+      }
+    });
+</script>
+{% endblock %}
