@@ -118,33 +118,38 @@
       $('#modalForm').modal('show');
     }
 
+    // 当点击tree节点时触发
     function onClick(e, treeId, treeNode) {
-			var zTree = $.fn.zTree.getZTreeObj("treeDemo2");
-			nodes = zTree.getSelectedNodes();
+      var zTree = $.fn.zTree.getZTreeObj("treeDemo2");
+      nodes = zTree.getSelectedNodes();
 
-			$("#form_parent").html(
-			  "<option value='"+nodes[0].id+"'>"+nodes[0].name+"</option>"
-			);
+      // 将点击的节点填充到select下
+      $("#form_parent").html(
+        "<option value='"+nodes[0].id+"'>"+nodes[0].name+"</option>"
+      );
 
-			hideTree();
-		}
+      // 填充之后隐藏树
+      hideTree();
+    }
 
-		function showTree() {
-			$("#menuContent").slideDown("fast");
+    // 点击下拉框时展示tree
+    function showTree() {
+      $("#menuContent").slideDown("fast");
+      $("body").bind("mousedown", onBodyDown);
+    }
 
-			$("body").bind("mousedown", onBodyDown);
-		}
+    // 隐藏tree
+    function hideTree() {
+      $("#menuContent").fadeOut("fast");
+      $("body").unbind("mousedown", onBodyDown);
+    }
 
-		function hideTree() {
-			$("#menuContent").fadeOut("fast");
-			$("body").unbind("mousedown", onBodyDown);
-		}
-
-		function onBodyDown(event) {
-			if (!(event.target.id == "form_parent" || event.target.id == "menuContent" || $(event.target).parents("#menuContent").length>0)) {
-				hideTree();
-			}
-		}
+    // 判断点击的位置不在下拉框或者时tree本身则调用hideTree隐藏树
+    function onBodyDown(event) {
+      if (!(event.target.id == "form_parent" || event.target.id == "menuContent" || $(event.target).parents("#menuContent").length>0)) {
+      hideTree();
+      }
+    }
 
     // 添加 - Ajax提交
     $('#modalForm_Content').submit(function (event) {
