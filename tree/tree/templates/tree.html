@@ -49,7 +49,7 @@
               <div class="form-group">
                 <label class="col-md-2 control-label"> 父节点 </label>
                 <div class="col-md-9">
-                  <select class="form-control" id="citySel" name="parent" onclick="showTree();"></select>
+                  <select class="form-control" id="form_parent" name="parent" onclick="showTree();"></select>
 
                   <div id="menuContent" class="menuContent" style="display:none;">
                     <ul id="treeDemo2" class="ztree" style="margin-top:0;"></ul>
@@ -122,7 +122,7 @@
 			var zTree = $.fn.zTree.getZTreeObj("treeDemo2");
 			nodes = zTree.getSelectedNodes();
 
-			$("#citySel").html(
+			$("#form_parent").html(
 			  "<option value='"+nodes[0].id+"'>"+nodes[0].name+"</option>"
 			);
 
@@ -141,7 +141,7 @@
 		}
 
 		function onBodyDown(event) {
-			if (!(event.target.id == "citySel" || event.target.id == "menuContent" || $(event.target).parents("#menuContent").length>0)) {
+			if (!(event.target.id == "form_parent" || event.target.id == "menuContent" || $(event.target).parents("#menuContent").length>0)) {
 				hideTree();
 			}
 		}
