@@ -28,4 +28,4 @@ python manage.py runserver 0.0.0.0:80
 
 5. 对应文章
 
-配合对应文章看源码更有效，文章地址：[直达链接，点我查看](https://ops-coffee.cn/s/e3m9xHVsvhe36IvG1YKhbA)
+配合对应文章看源码更有效，文章地址：[直达链接，点我查看](https://blog.ops-coffee.cn/s/e3m9xHVsvhe36IvG1YKhbA)
