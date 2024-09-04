@@ -14,7 +14,13 @@ pip install -r requirements.txt
 
 2. 初始化数据库
 ```
+python manage.py makemigrations ops_coffee
 python manage.py migrate
+```
+
+创建用户
+```
+python manage.py createsuperuser
 ```
 
 3. 运行项目
