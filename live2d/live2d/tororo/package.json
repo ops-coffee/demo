@@ -19,7 +19,7 @@
     "#USER",
     "/"
   ],
-  "_resolved": "http://registry.npm.taobao.org/live2d-widget-model-tororo/download/live2d-widget-model-tororo-1.0.5.tgz",
+  "_resolved": "https://registry.npmmirror.com/live2d-widget-model-tororo/download/live2d-widget-model-tororo-1.0.5.tgz",
   "_shasum": "f556caff824198ff41d12f7cec807e1301ebc9d1",
   "_spec": "live2d-widget-model-tororo",
   "_where": "/Users/qi/mygit/liveModel",
